@@ -9,10 +9,12 @@ class SyntaxTree:
     - token: Token, das diesem Knoten zugeordnet ist
         * Dabei kann es ein Terminal- oder Nichtterminalsymbol sein
     """
-    def __init__(self, t: TOKEN):
+
+    def __init__(self, t: TOKEN, v: str = "xd"):
         self.childNodes: list[SyntaxTree] = []
         self.token = t
         # TODO: Set semantic function
+        self.value = v
 
     def print_syntax_tree(self, t: int) -> None:
         """
@@ -20,20 +22,28 @@ class SyntaxTree:
         :param t: Anzahl der "Tabs" (Indents)
         :return: Nichts
         """
+
+        if self.token.name == "OPERATOR":
+            print("t0", "+", self.childNodes[0].value, self.value)
+
+        #print("Hallo: ")
+
+
         for i in range(0, t):
             print("  ", end="")
         print(self.token.name)
 
+
         for i in range(0, len(self.childNodes)):
             self.childNodes[i].print_syntax_tree(t+1)
 
-    def insert_subtree(self, token: TOKEN) -> 'SyntaxTree':
+    def insert_subtree(self, token: TOKEN, v: str = None) -> 'SyntaxTree':
         """
         Fügt diesem Syntaxbaum einen Kindknoten hinzu
         :param token: Token des neuen Kindelements
         :return: Den neuen Kindknoten
         """
-        node = SyntaxTree(token)
+        node = SyntaxTree(token, v)
         self.childNodes.append(node)
         return node
 

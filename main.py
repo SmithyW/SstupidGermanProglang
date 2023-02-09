@@ -5,7 +5,7 @@ from syntax_tree import SyntaxTree
 
 # Beispiel input, der verarbeitet wird
 input_text = """
-1+1*2!
+1-1*2!
 ZAHL xyz := 50 * (60+2) - 7!
 """
 
