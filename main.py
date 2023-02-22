@@ -5,7 +5,9 @@ from syntax_tree import SyntaxTree
 
 # Beispiel input, der verarbeitet wird
 input_text = """
-a := 1+3*4!
+ZAHL a := 1+3*4!
+ZAHL b := a / 16!
+DRUCKE b!
 """
 # Instanz eines lexers erstellen.
 # Dem Konstruktur wird der Inputtext übergeben

@@ -49,14 +49,11 @@ class Parser:
     # program -> statement program | statement
     def program(self, st: SyntaxTree) -> bool:
         eof_set = [TOKEN.EOF]
-        if self.statement(st.insert_subtree(TOKEN.STATEMENT)):
-            if not self.match(eof_set, st):
-                return self.program(st.insert_subtree(TOKEN.PROGRAM))
-            else:
-                return True
-        else:
-            self.syntax_error("Error in statement")
-            return False
+        while not self.match(eof_set, st):
+            if not self.statement(st.insert_subtree(TOKEN.STATEMENT)):
+                self.syntax_error("Error in statement")
+                return False
+        return True
 
     # statement -> (assignment | print | expression) eol
     # statement -> var ident assign expression eol
