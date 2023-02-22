@@ -133,7 +133,7 @@ class Parser:
     def term(self, st: SyntaxTree) -> bool:
         return \
                 self.operator(st.insert_subtree(TOKEN.OPERATOR)) \
-                and self.right_term(st.insert_subtree(TOKEN.RIGHT_TERM))
+                and self.right_term(st.insert_subtree(TOKEN.RIGHT_TERM, "halloLOOL"))
 
     # rightTerm -> mult operator rightTerm
     # rightTerm -> div operator rightTerm
@@ -188,7 +188,7 @@ class Parser:
     def match(self, match_set: list[TOKEN], st: SyntaxTree) -> bool:
         for el in match_set:
             if self.tokens[self.current_token_pointer].token_type == el:
-                st.insert_subtree(self.tokens[self.current_token_pointer].token_type)
+                st.insert_subtree(self.tokens[self.current_token_pointer].token_type, self.tokens[self.current_token_pointer].value)
                 self.current_token_pointer += 1
                 return True
         return False
