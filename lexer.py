@@ -9,9 +9,10 @@ class InputCharacter:
     Klasse, die jedes Zeichen eines Inputs
     inkl. Zeile zwischenspeichert
     """
-    def __init__(self, c: str, l: int):
+    def __init__(self, c: str, l: int, p: int):
         self.character = c
         self.line = l
+        self.pos = p
 
 
 class Lexer:
@@ -34,7 +35,7 @@ class Lexer:
         # Liste aller erkannten Token
         # Diese wird im Laufe des "lexens"
         # gefüllt
-        self.tokens: list['DslToken'] = []
+        self.tokens: list['Token'] = []
 
         self.__token_definitions: list['TokenDefinition'] = list()
         # Jedes Terminalsymbol inkl. regulärem
@@ -65,6 +66,7 @@ class Lexer:
         """
         c = -1
         line = 1
+        pos_in_line = 1
 
         while True:
             if len(self.input) < self.current_pos:
@@ -78,12 +80,14 @@ class Lexer:
             if ord(c) == 13:
                 continue
             else:
-                self.input_characters.append(InputCharacter(c, line))
+                self.input_characters.append(InputCharacter(c, line, pos_in_line))
                 if c == self.EOF:
                     break
                 elif c == '\n':
                     line += 1
+                    pos_in_line = 0
                 self.current_pos += 1
+                pos_in_line += 1
         # Zurücksetzen der current_pos fürs tokenizing
         self.current_pos = 0
 
@@ -93,8 +97,9 @@ class Lexer:
         Element im Inputtext
         :return: Nichts
         """
-        tokens: list['DslToken'] = list()
-        remaining_text: str = self.input
+        tokens: list['Token'] = list()
+        # characters der Input_characters als zusammengeführter string
+        remaining_text: str = ''.join(str(x.character) for x in self.input_characters)
 
         # Solange noch "remaining_text" vorhanden ist
         # wird weiterverarbeitet
@@ -104,14 +109,21 @@ class Lexer:
             remaining_text = remaining_text.lstrip()
             match = self.__find_match(remaining_text)
             if match.is_match:
-                tokens.append(DslToken(match.token, match.value))
+                # neuen remaining_text einstellen
                 remaining_text = match.remaining_text
+                # position und line des gematchten lexemes ermitteln
+                line, pos = self.get_line_pos(remaining_text, len(match.value))
+                tokens.append(Token(match.token, match.value, line, pos))
             else:
                 msg = f"{remaining_text.split(' ')[0]} kann keinem Token zugewiesen werden."
                 raise Exception(msg)
                 remaining_text = remaining_text[1:]
-        tokens.append(DslToken(TOKEN.EOF, self.EOF))  # Achtung Krücke
         self.tokens = tokens
+
+    def get_line_pos(self, remaining_text: str, len_lexeme: int):
+        diff: int = len(self.input_characters) - len(remaining_text) - len_lexeme
+        return self.input_characters[diff].line, self.input_characters[diff].pos
+
 
     def __find_match(self, remaining_text: str):
         """

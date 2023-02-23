@@ -1,4 +1,9 @@
-from lex_token import TOKEN
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from semantic import Semantic
+    from lex_token import TOKEN, Token
 
 
 class SyntaxTree:
@@ -10,11 +15,12 @@ class SyntaxTree:
         * Dabei kann es ein Terminal- oder Nichtterminalsymbol sein
     """
 
-    def __init__(self, t: TOKEN, v: str = "xd"):
+    def __init__(self, t: TOKEN, v: Semantic | None = None, tk: Token | None = None):
         self.childNodes: list[SyntaxTree] = []
-        self.token = t
+        self.token: TOKEN = t
+        self.tokenObj: Token = tk
         # TODO: Set semantic function
-        self.value = v
+        self.value: Semantic = v
 
     def print_syntax_tree(self, t: int) -> None:
         """
@@ -23,31 +29,24 @@ class SyntaxTree:
         :return: Nichts
         """
 
-        if self.token.name == "OPERATOR":
-            print("t0", "+", self.childNodes[0].value, self.value)
-
-        #print("Hallo: ")
-
-
         for i in range(0, t):
             print("  ", end="")
-        print(self.token.name)
-
+        print(self.token.name + " | " + self.value.__class__.__name__)
 
         for i in range(0, len(self.childNodes)):
             self.childNodes[i].print_syntax_tree(t+1)
 
-    def insert_subtree(self, token: TOKEN, v: str = None) -> 'SyntaxTree':
+    def insert_subtree(self, token: TOKEN, v: Semantic | None = None, tk: Token | None = None) -> SyntaxTree:
         """
         Fügt diesem Syntaxbaum einen Kindknoten hinzu
         :param token: Token des neuen Kindelements
         :return: Den neuen Kindknoten
         """
-        node = SyntaxTree(token, v)
+        node = SyntaxTree(token, v, tk)
         self.childNodes.append(node)
         return node
 
-    def get_child(self, i: int) -> 'SyntaxTree':
+    def get_child(self, i: int) -> SyntaxTree:
         """
         Gibt ein Kindelement dieses Syntaxbaums zurück
         :param i: Index des gewünschten Kindelements
@@ -58,3 +57,5 @@ class SyntaxTree:
         else:
             return self.childNodes[i]
 
+    def get_lexeme(self):
+        return self.tokenObj.lexeme

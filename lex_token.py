@@ -30,7 +30,9 @@ class TOKEN(Enum):
     PROGRAM = 100
     STATEMENT = 101
     ASSIGNMENT = 102
-    PRINTN = 103 # PRINTN vs PRINT: PRINTN ist Nichtterminal, PRINT Terminalsymbol
+    PRINTN = 103
+    # PRINTN vs PRINT: PRINTN ist Nichtterminal,
+    # PRINT Terminalsymbol
     EXPRESSION = 104
     RIGHT_EXPRESSION = 105
     TERM = 106
@@ -69,7 +71,7 @@ class TokenDefinition:
     def match(self, input_string: str):
         match = re.search(self.__regex_pattern, input_string)
         if match is not None:
-            if match.span()[1] != len(input_string):
+            if match.span()[1] <= len(input_string):
                 remaining_text = input_string[match.span()[1]:]
 
                 return TokenMatch(
