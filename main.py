@@ -3,10 +3,11 @@ from langParser import Parser
 from lex_token import TOKEN
 from lexer import Lexer
 from syntax_tree import SyntaxTree
+from symbol_table import SymbolTable
 from semantic.semantic import Semantic
 
 # Beispiel input, der verarbeitet wird
-input_text = """10-2+5-6+1!"""
+input_text = """(24-9)*5/(8-7)!"""
 # Instanz eines lexers erstellen.
 # Dem Konstruktur wird der Inputtext übergeben
 lexer = Lexer(input_text)
@@ -43,5 +44,8 @@ parseTree.print_syntax_tree(0)
 
 # Semantische Funktionen ausführen
 print("Input: " + input_text)
-print("Output (semantische Funktionen): " + str(parseTree.value.f(parseTree, Semantic().UNDEFINED)))
-# TODO: Codegen (Dafür werden noch die semantischen Funktionen in den (Nicht-)terminalsymbolen benötigt
+# print("Output (semantische Funktionen): " + str(parseTree.value.f(parseTree, Semantic().UNDEFINED)))
+
+sym = SymbolTable()
+parseTree.value.p(parseTree, sym, None)
+sym.print()
