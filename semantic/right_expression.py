@@ -28,7 +28,7 @@ class RightExpression(Semantic):
                 case '+':
                     return n + right_expression.value.f(right_expression, term.value.f(term, self.UNDEFINED))
                 case '-':
-                    return n - right_expression.value.f(right_expression, term.value.f(term, self.UNDEFINED))
+                    return right_expression.value.f(right_expression, n - term.value.f(term, self.UNDEFINED))
                 case _:
                     return self.UNDEFINED
         else:

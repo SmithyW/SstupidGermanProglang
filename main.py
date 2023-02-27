@@ -6,7 +6,7 @@ from syntax_tree import SyntaxTree
 from semantic.semantic import Semantic
 
 # Beispiel input, der verarbeitet wird
-input_text = """20-5+(3*5)/2!"""
+input_text = """10-2+5-6+1!"""
 # Instanz eines lexers erstellen.
 # Dem Konstruktur wird der Inputtext übergeben
 lexer = Lexer(input_text)
