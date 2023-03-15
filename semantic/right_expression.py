@@ -36,7 +36,7 @@ class RightExpression(Semantic):
                 case _:
                     return arg1
         else:
-            arg1
+            return arg1
 
     def f(self, st: SyntaxTree, n: int) -> int | str:
         if len(st.childNodes) == 3:
