@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from syntax_tree import SyntaxTree
-    from symbol_table import SymbolTable
+    from symbol_table_codegen import SymbolTable
 
 from semantic import Semantic
 

@@ -1,4 +1,4 @@
-import inspect
+from lex_token import Token
 
 
 class SymbolTable:
@@ -6,8 +6,8 @@ class SymbolTable:
     def __init__(self):
         self.table: list[SymbolTableEntry] = list()
 
-    def add(self, op: any, arg1: any, arg2: any):
-        new_entry = SymbolTableEntry(len(self.table), op, arg1, arg2)
+    def insert(self, token: Token):
+        new_entry = SymbolTableEntry(len(self.table), token, '')
         self.table.append(new_entry)
         return new_entry
 
@@ -18,13 +18,10 @@ class SymbolTable:
 
 class SymbolTableEntry:
 
-    def __init__(self, idx, op, arg1, arg2):
+    def __init__(self, idx, token: Token, sym_type):
         self.index: int = idx
-        self.operator = op
-        self.arg1 = arg1
-        self.arg2 = arg2
+        self.token = token
+        self.sym_type = sym_type
 
     def __str__(self):
-        argument2 = "#" + str(self.arg2.index) if isinstance(self.arg2, SymbolTableEntry) else str(self.arg2)
-        argument1 = "#" + str(self.arg1.index) if isinstance(self.arg1, SymbolTableEntry) else str(self.arg1)
-        return "{0} {1} {2} {3}".format(str(self.index), self.operator, argument1, argument2)
+        return "{0} {1} {2} {3}".format(str(self.index), self.token.lexeme)

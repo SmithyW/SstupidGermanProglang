@@ -8,13 +8,13 @@ if TYPE_CHECKING:
 from semantic import Semantic
 
 
-class EOF(Semantic):
+class Ident(Semantic):
 
     def __init__(self):
         super().__init__()
 
     def p(self, st: SyntaxTree, sym: SymbolTable, arg1: any):
-        return arg1
+        return st.tokenObj.lexeme
 
     def f(self, st: SyntaxTree, n: int):
-        return n
+        return self.UNDEFINED

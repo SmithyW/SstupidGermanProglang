@@ -222,6 +222,8 @@ def get_semantic_function(t: TOKEN) -> Semantic | None:
     match t:
         case TOKEN.EXPRESSION:
             return Expression()
+        case TOKEN.IDENT:
+            return Ident()
         case TOKEN.NUMBER:
             return Num()
         case TOKEN.OPERATOR:
