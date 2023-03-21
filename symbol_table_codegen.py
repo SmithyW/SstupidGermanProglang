@@ -1,12 +1,22 @@
 import inspect
 
+from symbol_table import SymbolTable
+
 
 class SymbolTableCodegen:
 
-    def __init__(self):
+    def __init__(self, symbol_table: SymbolTable):
         self.table: list[SymbolTableEntry] = list()
+        self.symbol_table = symbol_table
 
     def add(self, op: any, arg1: any, arg2: any):
+        if type(arg1) == str:
+            if self.symbol_table.search(arg1):
+                arg1 = self.symbol_table.get_index(arg1)
+        if type(arg2) == str:
+            if self.symbol_table.search(arg2):
+                arg2 = self.symbol_table.get_index(arg2)
+
         new_entry = SymbolTableEntry(len(self.table), op, arg1, arg2)
         self.table.append(new_entry)
         return new_entry

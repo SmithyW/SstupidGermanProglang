@@ -1,4 +1,5 @@
-from lex_token import Token, DslToken, TokenDefinition, TOKEN, TokenMatch
+from lex_token import Token, TokenDefinition, TOKEN, TokenMatch
+from symbol_table import SymbolTable
 
 # ACHTUNG: Die Klasse InputCharacter
 # wird aktuell noch nicht weiterverwendet
@@ -36,6 +37,7 @@ class Lexer:
         # Diese wird im Laufe des "lexens"
         # gefüllt
         self.tokens: list['Token'] = []
+        self.symbol_table: SymbolTable = SymbolTable()
 
         self.__token_definitions: list['TokenDefinition'] = list()
         # Jedes Terminalsymbol inkl. regulärem
@@ -91,7 +93,7 @@ class Lexer:
         # Zurücksetzen der current_pos fürs tokenizing
         self.current_pos = 0
 
-    def tokenize(self) -> None:
+    def tokenize(self) -> bool:
         """
         Sucht nach den passenden Token für jedes einzelne
         Element im Inputtext
@@ -101,8 +103,12 @@ class Lexer:
         # characters der Input_characters als zusammengeführter string
         remaining_text: str = ''.join(str(x.character) for x in self.input_characters)
 
+        ident_set = {TOKEN.INT, TOKEN.STR}
+
+        is_success = True
         # Solange noch "remaining_text" vorhanden ist
         # wird weiterverarbeitet
+
         while remaining_text is not None and remaining_text.strip() != "":
             # lstrip entfernt alle new lines, tabs und Leerzeichen auf der linken
             # Seite eines strings
@@ -114,16 +120,28 @@ class Lexer:
                 # position und line des gematchten lexemes ermitteln
                 line, pos = self.get_line_pos(remaining_text, len(match.value))
                 tokens.append(Token(match.token, match.value, line, pos))
+                if tokens[-1].token == TOKEN.IDENT:
+                    try:
+                        if tokens[-2].token in ident_set:
+                            self.symbol_table.insert(tokens[-1], tokens[-2].token)
+                    except IndexError:
+                        pass
+
+                    # Prüfe, ob Variable bereits deklariert wurde
+                    if not self.symbol_table.search(tokens[-1].lexeme):
+                        is_success = False
+                        print(f"Fehler in Zeile {line} Zeichen {pos} Variable {tokens[-1].lexeme} wurde vor ihrer Deklaration verwendet.")
             else:
                 msg = f"{remaining_text.split(' ')[0]} kann keinem Token zugewiesen werden."
-                raise Exception(msg)
+                print(msg)
+                is_success = False
                 remaining_text = remaining_text[1:]
         self.tokens = tokens
+        return is_success
 
     def get_line_pos(self, remaining_text: str, len_lexeme: int):
         diff: int = len(self.input_characters) - len(remaining_text) - len_lexeme
         return self.input_characters[diff].line, self.input_characters[diff].pos
-
 
     def __find_match(self, remaining_text: str):
         """
