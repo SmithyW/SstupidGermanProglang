@@ -3,11 +3,11 @@ from langParser import Parser
 from lex_token import TOKEN
 from lexer import Lexer
 from syntax_tree import SyntaxTree
-from symbol_table import SymbolTable
-from semantic.semantic import Semantic
+from symbol_table_codegen import SymbolTableCodegen
 
 # Beispiel input, der verarbeitet wird
-input_text = """(24-9)*5/(8-7)!"""
+input_text = """ZAHL a := 2*4 - 5*4!
+ZAHL b := a + 8!"""
 # Instanz eines lexers erstellen.
 # Dem Konstruktur wird der Inputtext übergeben
 lexer = Lexer(input_text)
@@ -19,7 +19,15 @@ lexer.read_input()
 print([str(x.character) for x in lexer.input_characters])
 # Den Inputtext in die entsprechenden Token umwandeln
 # und ggf. Fehler werfen
-lexer.tokenize()
+lex_success = lexer.tokenize()
+
+print("!!!### Symboltabelle nach dem Scannen ###!!!")
+lexer.symbol_table.print()
+
+# Programm beenden, wenn Fehler aufgetreten sind
+if not lex_success:
+    print("Compiler aufgrund von Fehlern im Scanner beendet.")
+    exit(1)
 
 # Token in der Konsole ausgeben (alle Terminalsymbole inkl. Zeile und Position in Zeile)
 print("!!!### ERKANNTE TOKEN ###!!!")
@@ -46,6 +54,6 @@ parseTree.print_syntax_tree(0)
 print("Input: " + input_text)
 # print("Output (semantische Funktionen): " + str(parseTree.value.f(parseTree, Semantic().UNDEFINED)))
 
-sym = SymbolTable()
+sym = SymbolTableCodegen(lexer.symbol_table)
 parseTree.value.p(parseTree, sym, None)
 sym.print()

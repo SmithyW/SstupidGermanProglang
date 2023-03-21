@@ -11,5 +11,6 @@ from semantic.term import Term
 from semantic.eol import EOL
 from semantic.epsilon import Epsilon
 from semantic.eof import EOF
+from semantic.ident import Ident
 
 
