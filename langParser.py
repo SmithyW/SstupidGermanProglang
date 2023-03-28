@@ -10,14 +10,26 @@ from semantic import *
 """
     Grammatik:
     program -> statement program | epsilon
-    statement -> assignment eol
-    statement -> print eol
-    statement -> expression eol
-    assignment -> var ident assign expression # TODO: Anders implementiert
-    var -> int | str # TODO: Anders implementiert
-    assign -> := # TODO: Anders implementiert
-    print -> print ident # TODO: Anders implementiert
+    statement -> (assignment | expression | print) eol
+    
+    assignment -> var ident assign expression
+    assignment -> ident assign expression
+    print -> print ident
     expression -> term rightExpression
+    
+    boolExpression -> boolTerm rightBool  
+    
+    rightBool -> AND boolTerm rightBool 
+        | OR boolTerm rightBool
+        | epsilon
+        
+    boolTerm -> comparison
+        | boolean
+        | ident
+        | (boolExpression)
+    
+    comparison -> expression compOperator expression 
+    
     rightExpression -> plus term rightExpression
     rightExpression -> minus term rightExpression
     rightExpression -> Epsilon
@@ -25,7 +37,7 @@ from semantic import *
     rightTerm -> mult operator rightTerm
     rightTerm -> div operator rightTerm
     rightTerm -> Epsilon
-    operator -> openPar expression closePar | num | ident
+    operator -> openPar expression closePar | num | ident | boolExpression
 """
 
 
@@ -51,7 +63,7 @@ class Parser:
         if self.program(parse_tree):
             return True
         else:
-            self.syntax_error("Error in Program")
+            self.syntax_error("Fehler in Programm")
             return False
 
     # program -> statement program | statement
@@ -63,7 +75,7 @@ class Parser:
             else:
                 return True
         else:
-            self.syntax_error("Error in statement")
+            self.syntax_error("Fehler in Ausdruck")
             return False
 
     # statement -> (assignment | print | expression) eol
@@ -71,7 +83,7 @@ class Parser:
     # statement -> print ident eol
     # statement -> expression eol
     def statement(self, st: SyntaxTree) -> bool:
-        var_set = [TOKEN.STR, TOKEN.INT]
+        var_set = [TOKEN.STR, TOKEN.INT, TOKEN.BOOLEAN]
         print_set = [TOKEN.PRINT]
         ident_set = [TOKEN.IDENT]
         eol_set = [TOKEN.EOL]
@@ -84,35 +96,35 @@ class Parser:
                         if self.match(eol_set, st):
                             return True
                         else:
-                            self.syntax_error("Expected EOL character")
+                            self.syntax_error("EOL Zeichen erwartet!!!")
                             return False
                     else:
-                        self.syntax_error("Error in expression")
+                        self.syntax_error("Fehler in Ausdruck")
                         return False
                 else:
-                    self.syntax_error("Expected assign token")
+                    self.syntax_error("Zuweisungszeichen erwartet")
                     return False
             else:
-                self.syntax_error("Expected identifier")
+                self.syntax_error("Variable erwartet")
                 return False
         elif self.match(print_set, st):
             if self.match(ident_set, st):
                 if self.match(eol_set, st):
                     return True
                 else:
-                    self.syntax_error("Expected EOL character")
+                    self.syntax_error("EOL Zeichen erwartet!!!")
                     return False
             else:
-                self.syntax_error("Expected identifier")
+                self.syntax_error("Variable erwartet")
                 return False
         elif self.expression(st.insert_subtree(TOKEN.EXPRESSION, get_semantic_function(TOKEN.EXPRESSION))):
             if self.match(eol_set, st):
                 return True
             else:
-                self.syntax_error("Expected EOL character")
+                self.syntax_error("EOL Zeichen erwartet!!!")
                 return False
         else:
-            self.syntax_error("Error in expression")
+            self.syntax_error("Fehler in Ausdruck")
             return False
 
     # expression -> term rightExpression
@@ -168,7 +180,84 @@ class Parser:
             st.insert_subtree(TOKEN.EPSILON, get_semantic_function(TOKEN.EPSILON))
             return True
 
-    # operator -> openPar expression closePar | num | ident
+    # boolExpression -> boolTerm rightBool
+    def bool_expression(self, st: SyntaxTree) -> bool:
+        return \
+                self.bool_term(st.insert_subtree(TOKEN.BOOL_TERM, get_semantic_function(TOKEN.BOOL_TERM))) \
+                and self.right_bool(st.insert_subtree
+                                    (TOKEN.RIGHT_BOOL, get_semantic_function(TOKEN.RIGHT_BOOL)))
+
+    # boolTerm -> comparison
+    #         | boolean
+    #         | ident
+    #         | (boolExpression)
+    def bool_term(self, st: SyntaxTree) -> bool:
+        boolean_set = [TOKEN.TRUE, TOKEN.FALSE]
+        ident_set = [TOKEN.IDENT]
+        open_par_set = [TOKEN.OPEN_PAR]
+        close_par_set = [TOKEN.CLOSE_PAR]
+
+        if self.match(boolean_set, st):
+            return True
+        elif self.match(ident_set, st):
+            return True
+        elif self.match(open_par_set, st):
+            if self.bool_expression(st.insert_subtree(
+             TOKEN.BOOL_EXPRESSION, get_semantic_function(TOKEN.BOOL_EXPRESSION))):
+                if self.match(close_par_set, st):
+                    return True
+                else:
+                    self.syntax_error("Schließende Klammer erwartet")
+                    return False
+            else:
+                self.syntax_error("Boolescher Ausdruck erwartet")
+                return False
+        elif self.comparison(st.insert_subtree(TOKEN.COMPARISON, get_semantic_function(TOKEN.COMPARISON))):
+            return True
+        else:
+            self.syntax_error("Bool, Variable, öffnende Klammer oder Vergleich erwartet")
+            return False
+
+    # rightBool -> AND boolTerm rightBool
+    #         | OR boolTerm rightBool
+    #         | epsilon
+    def right_bool(self, st: SyntaxTree) -> bool:
+        and_set = [TOKEN.AND]
+        or_set = [TOKEN.OR]
+
+        if self.match(and_set, st) or self.match(or_set, st):
+            return \
+                    self.bool_term(st.insert_subtree(TOKEN.BOOL_TERM, get_semantic_function(TOKEN.BOOL_TERM))) \
+                    and self.right_bool(st.insert_subtree(TOKEN.RIGHT_BOOL, get_semantic_function(TOKEN.RIGHT_BOOL)))
+        else:
+            st.insert_subtree(TOKEN.EPSILON, get_semantic_function(TOKEN.EPSILON))
+            return True
+
+    # comparison -> expression compOperator expression
+    def comparison(self, st: SyntaxTree) -> bool:
+        comp_set = [
+            TOKEN.COMPARE_EQ,
+            TOKEN.COMPARE_LT,
+            TOKEN.COMPARE_GT,
+            TOKEN.COMPARE_LTE,
+            TOKEN.COMPARE_GTE,
+            TOKEN.COMPARE_NOT]
+
+        if self.expression(st.insert_subtree(TOKEN.EXPRESSION, get_semantic_function(TOKEN.EXPRESSION))):
+            if self.match(comp_set, st):
+                if self.expression(st.insert_subtree(
+                 TOKEN.EXPRESSION, get_semantic_function(TOKEN.EXPRESSION, get_semantic_function(TOKEN.EXPRESSION)))):
+                    return True
+                else:
+                    self.syntax_error("Ausdruck erwartet")
+                    return False
+            else:
+                self.syntax_error("Vergleichsoperator erwartet")
+                return False
+        else:
+            self.syntax_error("Ausdruck erwartet")
+
+    # operator -> openPar expression closePar | num | ident | boolExpression
     def operator(self, st: SyntaxTree) -> bool:
         open_par_set = [TOKEN.OPEN_PAR]
         close_par_set = [TOKEN.CLOSE_PAR]
@@ -180,17 +269,19 @@ class Parser:
                 if self.match(close_par_set, st):
                     return True
                 else:
-                    self.syntax_error("Expected closing parenthesis")
+                    self.syntax_error("Schließende Klammer erwartet")
                     return False
             else:
-                self.syntax_error("Error in nested expression")
+                self.syntax_error("Fehler in verschachteltem Ausdruck")
                 return False
         elif self.match(num_set, st):
             return True
         elif self.match(ident_set, st):
             return True
+        elif self.bool_expression(st.insert_subtree(TOKEN.BOOL_EXPRESSION, get_semantic_function(TOKEN.BOOL_EXPRESSION))):
+            return True
         else:
-            self.syntax_error("Expected opening parenthesis")
+            self.syntax_error("Öffnende Klammer erwartet")
             return False  # TODO: SyntaxError
 
     def look_ahead(self, look_ahead_set: list['TOKEN']) -> bool:
@@ -212,20 +303,32 @@ class Parser:
 
     def syntax_error(self, s: str) -> None:
         if self.tokens[self.current_token_pointer].token == TOKEN.EOF:
-            print("Syntax error: EOF")
+            print("Syntaxfehler: EOF")
         else:
-            print("Syntax error: " + self.tokens[self.current_token_pointer].token.name)
+            print("Syntaxfehler: " + self.tokens[self.current_token_pointer].token.name)
         print("" if s is None else s)
 
 
 def get_semantic_function(t: TOKEN) -> Semantic | None:
     match t:
+        case TOKEN.BOOL_EXPRESSION:
+            return BoolExpression()
+        case TOKEN.BOOL_TERM:
+            return BoolTerm()
+        case TOKEN.RIGHT_BOOL:
+            return RightBool()
+        case TOKEN.COMPARISON:
+            return Comparison()
         case TOKEN.EXPRESSION:
             return Expression()
         case TOKEN.IDENT:
             return Ident()
         case TOKEN.NUMBER:
             return Num()
+        case TOKEN.TRUE:
+            return Boolean()
+        case TOKEN.FALSE:
+            return Boolean()
         case TOKEN.OPERATOR:
             return Operator()
         case TOKEN.PROGRAM:

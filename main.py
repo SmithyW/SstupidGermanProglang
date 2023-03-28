@@ -6,8 +6,11 @@ from syntax_tree import SyntaxTree
 from symbol_table_codegen import SymbolTableCodegen
 
 # Beispiel input, der verarbeitet wird
-input_text = """ZAHL a := 2*4 - 5*4!
-ZAHL b := a + 8!"""
+input_text = """
+ZAHL a := 2 * 4 + 3!
+BOOL b := 2 ?= 5!
+"""
+
 # Instanz eines lexers erstellen.
 # Dem Konstruktur wird der Inputtext übergeben
 lexer = Lexer(input_text)
@@ -26,7 +29,7 @@ lexer.symbol_table.print()
 
 # Programm beenden, wenn Fehler aufgetreten sind
 if not lex_success:
-    print("Compiler aufgrund von Fehlern im Scanner beendet.")
+    print("Kompilierung aufgrund von Fehlern im Scanner beendet.")
     exit(1)
 
 # Token in der Konsole ausgeben (alle Terminalsymbole inkl. Zeile und Position in Zeile)

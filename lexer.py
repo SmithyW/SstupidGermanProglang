@@ -51,9 +51,26 @@ class Lexer:
         self.__token_definitions.append(TokenDefinition(TOKEN.DIV, r'^\/'))
         self.__token_definitions.append(TokenDefinition(TOKEN.OPEN_PAR, r'^\('))
         self.__token_definitions.append(TokenDefinition(TOKEN.CLOSE_PAR, r'^\)'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.OPEN_RECT_PAR, r'^\['))
+        self.__token_definitions.append(TokenDefinition(TOKEN.CLOSE_RECT_PAR, r'^\]'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_EQ, r'^\?='))
+        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_GT, r'^\?>'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_LT, r'^\?<'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_GTE, r'^\?>\?='))
+        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_LTE, r'^\?<\?='))
+        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_NOT, r'^\?-='))
         self.__token_definitions.append(TokenDefinition(TOKEN.PRINT, r'^DRUCKE'))
         self.__token_definitions.append(TokenDefinition(TOKEN.INT, r'^ZAHL'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.BOOLEAN, r'^BOOL'))
         self.__token_definitions.append(TokenDefinition(TOKEN.STR, r'^ZEICHENKETTE'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.WHEN, r'^FALLS'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.THEN, r'^DANN'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.ELSE, r'^ANSONSTEN'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.TRUE, r'^WAHR'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.FALSE, r'^FALSCH'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.AND, r'^UND'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.OR, r'^ODER'))
+        self.__token_definitions.append(TokenDefinition(TOKEN.FALSE, r'^NICHT'))
         self.__token_definitions.append(TokenDefinition(TOKEN.EOL, r'^!'))
         self.__token_definitions.append(TokenDefinition(TOKEN.EOF, r'^' + self.EOF))
 
@@ -103,7 +120,7 @@ class Lexer:
         # characters der Input_characters als zusammengeführter string
         remaining_text: str = ''.join(str(x.character) for x in self.input_characters)
 
-        ident_set = {TOKEN.INT, TOKEN.STR}
+        ident_set = {TOKEN.INT, TOKEN.STR, TOKEN.BOOLEAN}
 
         is_success = True
         # Solange noch "remaining_text" vorhanden ist
@@ -121,11 +138,15 @@ class Lexer:
                 line, pos = self.get_line_pos(remaining_text, len(match.value))
                 tokens.append(Token(match.token, match.value, line, pos))
                 if tokens[-1].token == TOKEN.IDENT:
-                    try:
-                        if tokens[-2].token in ident_set:
-                            self.symbol_table.insert(tokens[-1], tokens[-2].token)
-                    except IndexError:
-                        pass
+                    if self.symbol_table.search(tokens[-1].lexeme):
+                        is_success = False
+                        print(f"Fehler in Zeile {line} Zeichen {pos} Variable {tokens[-1].lexeme} wurde bereits deklariert")
+                    else:
+                        try:
+                            if tokens[-2].token in ident_set:
+                                self.symbol_table.insert(tokens[-1], tokens[-2].token)
+                        except IndexError:
+                            pass
 
                     # Prüfe, ob Variable bereits deklariert wurde
                     if not self.symbol_table.search(tokens[-1].lexeme):

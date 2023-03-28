@@ -10,7 +10,7 @@ from lex_token import TOKEN
 
 
 class Statement(Semantic):
-    # statement -> assignment eol # TODO: Implementieren
+    # statement -> assignment eol
 
     # statement -> print eol # TODO: Implementieren
 
@@ -34,8 +34,8 @@ class Statement(Semantic):
             eol: SyntaxTree = st.get_child(2)
 
             if eol.token == TOKEN.EOL:
-                sym_entry = sym.add('prnt', ident.value.p(ident, sym, arg1))
-                return ident.value.p(ident, sym, prnt.value.p(prnt, sym, arg1))
+                sym_entry = sym.add('aus', ident.value.p(ident, sym, arg1), None)
+                return None
 
         elif len(st.childNodes) == 5:
             var: SyntaxTree = st.get_child(0)

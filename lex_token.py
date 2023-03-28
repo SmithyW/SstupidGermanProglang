@@ -9,22 +9,39 @@ class TOKEN(Enum):
     """
     # basic types
     NONE = 0            # Kein bekanntes Token
-    IDENT = 1           # Identifier
+    IDENT = 1           # Ident
     NUMBER = 2          # Zahl
+    BOOLEAN = 3            # Bool
 
     # reserved symbols
-    ASSIGN = 10         # Zuweisungssymbol :=
-    ADD = 11           # +
-    SUB = 12          # -
-    MUL = 13            # *
-    DIV = 14            # /
-    OPEN_PAR = 15       # (
-    CLOSE_PAR = 16      # )
+    ASSIGN = 10             # :=
+    ADD = 11                # +
+    SUB = 12                # -
+    MUL = 13                # *
+    DIV = 14                # /
+    OPEN_PAR = 15           # (
+    CLOSE_PAR = 16          # )
+    OPEN_RECT_PAR = 17      # [
+    CLOSE_RECT_PAR = 18     # ]
+    COMPARE_EQ = 19         # ?=
+    COMPARE_GT = 20         # ?>
+    COMPARE_LT = 21         # ?<
+    COMPARE_GTE = 22        # ?>?=
+    COMPARE_LTE = 23        # ?<?=
+    COMPARE_NOT = 24        # ?-=
 
     # keywords
     PRINT = 40          # DRUCKE keyword
     INT = 41            # ZAHL Keyword
     STR = 42            # ZEICHENKETTE keyword
+    WHEN = 43           # FALLS keyword
+    THEN = 44           # DANN keyword
+    ELSE = 45           # ANSONSTEN keyword
+    TRUE = 46           # WAHR keyword
+    FALSE = 47          # FALSCH keyword
+    AND = 48            # UND keyword
+    OR = 49             # ODER keyword
+    NOT = 50            # NICHT keyword
 
     # non-terminal symbols
     PROGRAM = 100
@@ -39,6 +56,10 @@ class TOKEN(Enum):
     RIGHT_TERM = 107
     OPERATOR = 108
     EPSILON = 109
+    BOOL_EXPRESSION = 110
+    BOOL_TERM = 111
+    RIGHT_BOOL = 112
+    COMPARISON = 113
 
     # others
     EOL = 900           # EndOfLine (!)

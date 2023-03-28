@@ -17,7 +17,7 @@ class Expression(Semantic):
         term: SyntaxTree = st.get_child(0)
         right_expression: SyntaxTree = st.get_child(1)
 
-        return right_expression.value.p(right_expression, sym, term.value.p(term, sym, None))
+        return right_expression.value.p(right_expression, sym, term.value.p(term, sym, arg1))
 
     def f(self, st: SyntaxTree, n: int) -> int | str:
         term: SyntaxTree = st.get_child(0)
