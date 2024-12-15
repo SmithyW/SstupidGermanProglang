@@ -54,8 +54,7 @@ class SyntaxTree:
         """
         if i > len(self.childNodes):
             return None
-        else:
-            return self.childNodes[i]
+        return self.childNodes[i]
 
     def get_lexeme(self):
         return self.tokenObj.lexeme
