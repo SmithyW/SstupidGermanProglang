@@ -7,7 +7,7 @@ from syntax_tree import SyntaxTree
 from symbol_table_codegen import SymbolTableCodegen
 
 # Beispiel input, der verarbeitet wird
-INPUT_TEXT = """ZAHL a := 6 MAL KLAMMER_AUF 10 PLUS 4 KLAMMER_ZU!
+INPUT_TEXT = """ZAHL a := 6 MAL KLAMMER_AUF 10 PLUS 4 KLAMMER_ZU MINUS KLAMMER_AUF KLAMMER_AUF 3 PLUS 7 KLAMMER_ZU MAL 3 KLAMMER_ZU PLUS 30!
 ZAHL b := 4 MINUS 2!
 ZAHL c := a GETEILT_DURCH b!
 """
