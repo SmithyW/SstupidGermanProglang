@@ -89,7 +89,7 @@ class Lexer:
         self.__token_definitions.append(TokenDefinition(TOKEN.AND, r'^UND'))
         self.__token_definitions.append(TokenDefinition(TOKEN.OR, r'^ODER'))
         self.__token_definitions.append(
-            TokenDefinition(TOKEN.FALSE, r'^NICHT'))
+            TokenDefinition(TOKEN.NOT, r'^NICHT'))
         self.__token_definitions.append(TokenDefinition(TOKEN.EOL, r'^!'))
         self.__token_definitions.append(
             TokenDefinition(TOKEN.EOF, r'^' + self.EOF))
@@ -159,10 +159,10 @@ class Lexer:
                 # position und line des gematchten lexemes ermitteln
                 line, pos = self.get_line_pos(remaining_text, len(match.value))
                 tokens.append(Token(match.token, match.value, line, pos))
-                if tokens[-1].token == TOKEN.IDENT and tokens[-2].token in [TOKEN.INT, TOKEN.STR, TOKEN.BOOLEAN]:
-                    if self.symbol_table.search(tokens[-1].lexeme):
+                if tokens[-1].token == TOKEN.IDENT:
+                    if self.symbol_table.search(tokens[-1].lexeme) and tokens[-2].token in ident_set:
                         is_success = False
-                        print(f"Fehler in Zeile {line} Zeichen {pos} Variable {
+                        print(f"Fehler in Zeile {line} Zeichen {pos}: Variable {
                               tokens[-1].lexeme} wurde bereits deklariert")
                     else:
                         try:
@@ -175,8 +175,8 @@ class Lexer:
                     # Prüfe, ob Variable bereits deklariert wurde
                     if not self.symbol_table.search(tokens[-1].lexeme):
                         is_success = False
-                        print(f"Fehler in Zeile {line} Zeichen {pos} Variable {
-                              tokens[-1].lexeme} wurde vor ihrer Deklaration verwendet.")
+                        print(f"Fehler in Zeile {line} Zeichen {pos}: Variable {
+                            tokens[-1].lexeme} wurde vor ihrer Deklaration verwendet.")
             else:
                 msg = f"{remaining_text.split(
                     ' ')[0]} kann keinem Token zugewiesen werden."

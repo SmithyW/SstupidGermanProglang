@@ -9,7 +9,8 @@ from symbol_table_codegen import SymbolTableCodegen
 input_text = """ZAHL a := 2 * 4 + 3!
 ZAHL b := 2 * 5!
 ZAHL c := a * b!
-b := 5!
+ZAHL d := 5!
+a := 2!
 """
 
 # Instanz eines lexers erstellen.
