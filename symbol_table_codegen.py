@@ -1,5 +1,3 @@
-import inspect
-
 from symbol_table import SymbolTable
 
 
