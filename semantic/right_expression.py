@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from syntax_tree import SyntaxTree
     from symbol_table_codegen import SymbolTable
 
+from lex_token import TOKEN
 from semantic import Semantic
 
 
@@ -26,12 +27,14 @@ class RightExpression(Semantic):
             term: SyntaxTree = st.get_child(1)
             right_expression: SyntaxTree = st.get_child(2)
 
-            match symbol.get_lexeme():
-                case '+':
-                    sym_entry = sym.add('+', arg1, term.value.p(term, sym, None))
+            match symbol.token:
+                case TOKEN.ADD:
+                    sym_entry = sym.add(
+                        '+', arg1, term.value.p(term, sym, None))
                     return right_expression.value.p(right_expression, sym, sym_entry)
-                case '-':
-                    sym_entry = sym.add('-', arg1, term.value.p(term, sym, None))
+                case TOKEN.SUB:
+                    sym_entry = sym.add(
+                        '-', arg1, term.value.p(term, sym, None))
                     return right_expression.value.p(right_expression, sym, sym_entry)
                 case _:
                     return arg1
@@ -44,10 +47,10 @@ class RightExpression(Semantic):
             term: SyntaxTree = st.get_child(1)
             right_expression: SyntaxTree = st.get_child(2)
 
-            match symbol.get_lexeme():
-                case '+':
+            match symbol.token:
+                case TOKEN.ADD:
                     return n + right_expression.value.f(right_expression, term.value.f(term, self.UNDEFINED))
-                case '-':
+                case TOKEN.SUB:
                     return right_expression.value.f(right_expression, n - term.value.f(term, self.UNDEFINED))
                 case _:
                     return self.UNDEFINED

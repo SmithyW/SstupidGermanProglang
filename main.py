@@ -7,11 +7,9 @@ from syntax_tree import SyntaxTree
 from symbol_table_codegen import SymbolTableCodegen
 
 # Beispiel input, der verarbeitet wird
-INPUT_TEXT = """ZAHL a := 2 * 4 + 3!
-ZAHL b := 2 * 5!
-ZAHL c := a * b!
-ZAHL d := 5!
-a := 2!
+INPUT_TEXT = """ZAHL a := 6 MAL KLAMMER_AUF 10 PLUS 4 KLAMMER_ZU!
+ZAHL b := 4 MINUS 2!
+ZAHL c := a GETEILT_DURCH b!
 """
 
 # Instanz eines lexers erstellen.

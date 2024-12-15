@@ -15,20 +15,20 @@ class TOKEN(Enum):
 
     # reserved symbols
     ASSIGN = 10             # :=
-    ADD = 11                # +
-    SUB = 12                # -
-    MUL = 13                # *
-    DIV = 14                # /
-    OPEN_PAR = 15           # (
-    CLOSE_PAR = 16          # )
-    OPEN_RECT_PAR = 17      # [
-    CLOSE_RECT_PAR = 18     # ]
-    COMPARE_EQ = 19         # ?=
-    COMPARE_GT = 20         # ?>
-    COMPARE_LT = 21         # ?<
-    COMPARE_GTE = 22        # ?>?=
-    COMPARE_LTE = 23        # ?<?=
-    COMPARE_NOT = 24        # ?-=
+    ADD = 11                # PLUS
+    SUB = 12                # MINUS
+    MUL = 13                # MAL
+    DIV = 14                # GETEILT_DURCH
+    OPEN_PAR = 15           # KLAMMER_AUF
+    CLOSE_PAR = 16          # KLAMMER_ZU
+    OPEN_RECT_PAR = 17      # ECKIGE_KLAMMER_AUF
+    CLOSE_RECT_PAR = 18     # ECKIGE_KLAMMER_ZU
+    COMPARE_EQ = 19         # IST_GLEICH
+    COMPARE_GT = 20         # KLEINER
+    COMPARE_LT = 21         # GRÖSSER
+    COMPARE_GTE = 22        # GRÖSSER_GLEICH
+    COMPARE_LTE = 23        # KLEINER_GLEICH
+    COMPARE_NOT = 24        # NICHT_GLEICH
 
     # keywords
     PRINT = 40          # DRUCKE keyword

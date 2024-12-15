@@ -47,31 +47,35 @@ class Lexer:
             TokenDefinition(TOKEN.IDENT, r'^[a-z]+'))
         self.__token_definitions.append(
             TokenDefinition(TOKEN.NUMBER, r'^[0-9]+'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.ADD, r'^PLUS'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.SUB, r'^MINUS'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.MUL, r'^MAL'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.DIV, r'^GETEILT_DURCH'))
         self.__token_definitions.append(TokenDefinition(TOKEN.ASSIGN, r'^:='))
-        self.__token_definitions.append(TokenDefinition(TOKEN.ADD, r'^\+'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.SUB, r'^\-'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.MUL, r'^\*'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.DIV, r'^\/'))
         self.__token_definitions.append(
-            TokenDefinition(TOKEN.OPEN_PAR, r'^\('))
+            TokenDefinition(TOKEN.OPEN_PAR, r'^KLAMMER_AUF'))
         self.__token_definitions.append(
-            TokenDefinition(TOKEN.CLOSE_PAR, r'^\)'))
+            TokenDefinition(TOKEN.CLOSE_PAR, r'^KLAMMER_ZU'))
         self.__token_definitions.append(
-            TokenDefinition(TOKEN.OPEN_RECT_PAR, r'^\['))
+            TokenDefinition(TOKEN.OPEN_RECT_PAR, r'^ECKIGE_KLAMMER_AUF'))
         self.__token_definitions.append(
-            TokenDefinition(TOKEN.CLOSE_RECT_PAR, r'^\]'))
+            TokenDefinition(TOKEN.CLOSE_RECT_PAR, r'^ECKIGE_KLAMMER_ZU'))
         self.__token_definitions.append(
-            TokenDefinition(TOKEN.COMPARE_EQ, r'^\?='))
+            TokenDefinition(TOKEN.COMPARE_EQ, r'^IST_GLEICH'))
         self.__token_definitions.append(
-            TokenDefinition(TOKEN.COMPARE_GT, r'^\?>'))
+            TokenDefinition(TOKEN.COMPARE_GT, r'^KLEINER'))
         self.__token_definitions.append(
-            TokenDefinition(TOKEN.COMPARE_LT, r'^\?<'))
+            TokenDefinition(TOKEN.COMPARE_LT, r'^GRÖSSER'))
         self.__token_definitions.append(
-            TokenDefinition(TOKEN.COMPARE_GTE, r'^\?>\?='))
+            TokenDefinition(TOKEN.COMPARE_GTE, r'^GRÖSSER_GLEICH'))
         self.__token_definitions.append(
-            TokenDefinition(TOKEN.COMPARE_LTE, r'^\?<\?='))
+            TokenDefinition(TOKEN.COMPARE_LTE, r'^KLEINER_GLEICH'))
         self.__token_definitions.append(
-            TokenDefinition(TOKEN.COMPARE_NOT, r'^\?-='))
+            TokenDefinition(TOKEN.COMPARE_NOT, r'^NICHT_GLEICH'))
         self.__token_definitions.append(
             TokenDefinition(TOKEN.PRINT, r'^DRUCKE'))
         self.__token_definitions.append(TokenDefinition(TOKEN.INT, r'^ZAHL'))
