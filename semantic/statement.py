@@ -34,8 +34,24 @@ class Statement(Semantic):
             eol: SyntaxTree = st.get_child(2)
 
             if eol.token == TOKEN.EOL:
-                sym_entry = sym.add('aus', ident.value.p(ident, sym, arg1), None)
+                sym_entry = sym.add(
+                    'aus', ident.value.p(ident, sym, arg1), None)
                 return None
+
+        elif len(st.childNodes) == 4:
+            ident: SyntaxTree = st.get_child(0)
+            assign: SyntaxTree = st.get_child(1)
+            expression: SyntaxTree = st.get_child(2)
+            eol: SyntaxTree = st.get_child(3)
+
+            if eol.token == TOKEN.EOL:
+                if assign.token == TOKEN.ASSIGN:
+                    sym_entry = sym.add('=', ident.value.p(
+                        ident, sym, arg1), expression.value.p(expression, sym, arg1))
+                    return sym_entry
+                else:
+                    print("Expected Assign Symbol")
+                    return None
 
         elif len(st.childNodes) == 5:
             var: SyntaxTree = st.get_child(0)
@@ -46,7 +62,8 @@ class Statement(Semantic):
 
             if eol.token == TOKEN.EOL:
                 if assign.token == TOKEN.ASSIGN:
-                    sym_entry = sym.add('=', ident.value.p(ident, sym, arg1), expression.value.p(expression, sym, arg1))
+                    sym_entry = sym.add('=', ident.value.p(
+                        ident, sym, arg1), expression.value.p(expression, sym, arg1))
                     return sym_entry
                 else:
                     print("Expected Assign Symbol")

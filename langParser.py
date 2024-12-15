@@ -7,27 +7,26 @@ if TYPE_CHECKING:
 
 from lexer import TOKEN
 from semantic import *
-"""
-    Grammatik:
-    program -> statement program | epsilon
-    statement -> (assignment | expression | print) eol
-    
-    assignment -> var ident assign expression
-    assignment -> ident assign expression
-    print -> print ident
-    expression -> term rightExpression
 
-
-    
-    rightExpression -> plus term rightExpression
-    rightExpression -> minus term rightExpression
-    rightExpression -> Epsilon
-    term -> operator rightTerm
-    rightTerm -> mult operator rightTerm
-    rightTerm -> div operator rightTerm
-    rightTerm -> Epsilon
-    operator -> openPar expression closePar | num | ident 
-"""
+# Grammatik:
+# program -> statement program | epsilon
+# statement -> (assignment | expression | print) eol
+#
+# assignment -> var ident assign expression
+# assignment -> ident assign expression
+# print -> print ident
+# expression -> term rightExpression
+#
+#
+#
+# rightExpression -> plus term rightExpression
+# rightExpression -> minus term rightExpression
+# rightExpression -> Epsilon
+# term -> operator rightTerm
+# rightTerm -> mult operator rightTerm
+# rightTerm -> div operator rightTerm
+# rightTerm -> Epsilon
+# operator -> openPar expression closePar | num | ident
 
 
 class Parser:
@@ -96,6 +95,20 @@ class Parser:
                     return False
             else:
                 self.syntax_error("Variable erwartet")
+                return False
+        elif self.match(ident_set, st):
+            if self.match(assign_set, st):
+                if self.expression(st.insert_subtree(TOKEN.EXPRESSION, get_semantic_function(TOKEN.EXPRESSION))):
+                    if self.match(eol_set, st):
+                        return True
+                    else:
+                        self.syntax_error("EOL Zeichen erwartet!!!")
+                        return False
+                else:
+                    self.syntax_error("Fehler in Ausdruck")
+                    return False
+            else:
+                self.syntax_error("Zuweisungszeichen erwartet")
                 return False
         elif self.match(print_set, st):
             if self.match(ident_set, st):
@@ -232,10 +245,10 @@ def get_semantic_function(t: TOKEN) -> Semantic | None:
             return Ident()
         case TOKEN.NUMBER:
             return Num()
-        case TOKEN.TRUE:
-            return Boolean()
-        case TOKEN.FALSE:
-            return Boolean()
+#        case TOKEN.TRUE:
+#            return Boolean()
+#        case TOKEN.FALSE:
+#            return Boolean()
         case TOKEN.OPERATOR:
             return Operator()
         case TOKEN.PROGRAM:
