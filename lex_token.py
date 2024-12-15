@@ -56,10 +56,6 @@ class TOKEN(Enum):
     RIGHT_TERM = 107
     OPERATOR = 108
     EPSILON = 109
-    BOOL_EXPRESSION = 110
-    BOOL_TERM = 111
-    RIGHT_BOOL = 112
-    COMPARISON = 113
 
     # others
     EOL = 900           # EndOfLine (!)
@@ -70,6 +66,7 @@ class Token:
     """
     Klasse, die Informationen zu jedem Token im Input enthält
     """
+
     def __init__(self, token: TOKEN, lexeme: str, line: int, pos: int):
         self.token = token  # Token
         self.lexeme = lexeme  # Dem Token zugehöriger Teilstring
@@ -85,6 +82,7 @@ class TokenDefinition:
     """
     Definiert ein Token: Welcher reguläre Ausruck weist auf welches Token hin
     """
+
     def __init__(self, token_type: TOKEN, regex_pattern: str) -> None:
         self.__regex_pattern = regex_pattern
         self.__returnsToken = token_type
@@ -110,24 +108,25 @@ class TokenMatch:
     """
     Hilfsobjekt zur Weiterverarbeitung im lexer
     """
+
     def __init__(
-        self, 
-        is_match: bool, 
-        token: TOKEN = None, 
-        value: str = None, 
+        self,
+        is_match: bool,
+        token: TOKEN = None,
+        value: str = None,
         remaining_text: str = None
     ) -> None:
         self.is_match: bool = is_match
         self.token: TOKEN = token
         self.value: str = value
         self.remaining_text: str = remaining_text
-    
+
 
 class DslToken:
 
     def __init__(self, token_type: TOKEN, value: str = "") -> None:
         self.token_type = token_type
         self.value = value
-    
+
     def clone(self):
         return DslToken(self.token_type, self.value)
