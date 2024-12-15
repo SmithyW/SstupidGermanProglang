@@ -1,3 +1,4 @@
+import sys
 import langParser
 from langParser import Parser
 from lex_token import TOKEN
@@ -6,7 +7,7 @@ from syntax_tree import SyntaxTree
 from symbol_table_codegen import SymbolTableCodegen
 
 # Beispiel input, der verarbeitet wird
-input_text = """ZAHL a := 2 * 4 + 3!
+INPUT_TEXT = """ZAHL a := 2 * 4 + 3!
 ZAHL b := 2 * 5!
 ZAHL c := a * b!
 ZAHL d := 5!
@@ -15,7 +16,7 @@ a := 2!
 
 # Instanz eines lexers erstellen.
 # Dem Konstruktur wird der Inputtext übergeben
-lexer = Lexer(input_text)
+lexer = Lexer(INPUT_TEXT)
 
 # Den Input auslesen und jeden einzelnen
 # Character als Instanz der InputCharacter Klasse speichern
@@ -32,7 +33,7 @@ lexer.symbol_table.print()
 # Programm beenden, wenn Fehler aufgetreten sind
 if not lex_success:
     print("Kompilierung aufgrund von Fehlern im Scanner beendet.")
-    exit(1)
+    sys.exit(1)
 
 # Token in der Konsole ausgeben (alle Terminalsymbole inkl. Zeile und Position in Zeile)
 print("!!!### ERKANNTE TOKEN ###!!!")
@@ -57,8 +58,7 @@ parser.parse(parseTree)
 parseTree.print_syntax_tree(0)
 
 # Semantische Funktionen ausführen
-print("Input: " + input_text)
-# print("Output (semantische Funktionen): " + str(parseTree.value.f(parseTree, Semantic().UNDEFINED)))
+print("Input: " + INPUT_TEXT)
 
 sym = SymbolTableCodegen(lexer.symbol_table)
 parseTree.value.p(parseTree, sym, None)
