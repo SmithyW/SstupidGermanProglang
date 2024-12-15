@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from syntax_tree import SyntaxTree
     from symbol_table_codegen import SymbolTable
 
+from lex_token import TOKEN
 from semantic import Semantic
 
 
@@ -27,12 +28,14 @@ class RightTerm(Semantic):
             operator: SyntaxTree = st.get_child(1)
             right_term: SyntaxTree = st.get_child(2)
 
-            match symbol.get_lexeme():
-                case '*':
-                    sym_entry = sym.add('*', arg1, operator.value.p(operator, sym, None))
+            match symbol.token:
+                case TOKEN.MUL:
+                    sym_entry = sym.add(
+                        '*', arg1, operator.value.p(operator, sym, None))
                     return right_term.value.p(right_term, sym, sym_entry)
-                case '/':
-                    sym_entry = sym.add('/', arg1, operator.value.p(operator, sym, None))
+                case TOKEN.DIV:
+                    sym_entry = sym.add(
+                        '/', arg1, operator.value.p(operator, sym, None))
                     return right_term.value.p(right_term, sym, sym_entry)
                 case _:
                     return arg1
@@ -45,10 +48,10 @@ class RightTerm(Semantic):
             operator: SyntaxTree = st.get_child(1)
             right_term: SyntaxTree = st.get_child(2)
 
-            match symbol.get_lexeme():
-                case '*':
+            match symbol.token:
+                case TOKEN.MUL:
                     return n*right_term.value.f(right_term, operator.value.f(operator, self.UNDEFINED))
-                case '/':
+                case TOKEN.DIV:
                     return n/right_term.value.f(right_term, operator.value.f(operator, self.UNDEFINED))
                 case _:
                     return self.UNDEFINED
