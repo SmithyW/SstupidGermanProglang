@@ -10,6 +10,7 @@ class InputCharacter:
     Klasse, die jedes Zeichen eines Inputs
     inkl. Zeile zwischenspeichert
     """
+
     def __init__(self, c: str, l: int, p: int):
         self.character = c
         self.line = l
@@ -42,37 +43,56 @@ class Lexer:
         self.__token_definitions: list['TokenDefinition'] = list()
         # Jedes Terminalsymbol inkl. regulärem
         # Ausdruck registrieren
-        self.__token_definitions.append(TokenDefinition(TOKEN.IDENT, r'^[a-z]+'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.NUMBER, r'^[0-9]+'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.IDENT, r'^[a-z]+'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.NUMBER, r'^[0-9]+'))
         self.__token_definitions.append(TokenDefinition(TOKEN.ASSIGN, r'^:='))
         self.__token_definitions.append(TokenDefinition(TOKEN.ADD, r'^\+'))
         self.__token_definitions.append(TokenDefinition(TOKEN.SUB, r'^\-'))
         self.__token_definitions.append(TokenDefinition(TOKEN.MUL, r'^\*'))
         self.__token_definitions.append(TokenDefinition(TOKEN.DIV, r'^\/'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.OPEN_PAR, r'^\('))
-        self.__token_definitions.append(TokenDefinition(TOKEN.CLOSE_PAR, r'^\)'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.OPEN_RECT_PAR, r'^\['))
-        self.__token_definitions.append(TokenDefinition(TOKEN.CLOSE_RECT_PAR, r'^\]'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_EQ, r'^\?='))
-        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_GT, r'^\?>'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_LT, r'^\?<'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_GTE, r'^\?>\?='))
-        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_LTE, r'^\?<\?='))
-        self.__token_definitions.append(TokenDefinition(TOKEN.COMPARE_NOT, r'^\?-='))
-        self.__token_definitions.append(TokenDefinition(TOKEN.PRINT, r'^DRUCKE'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.OPEN_PAR, r'^\('))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.CLOSE_PAR, r'^\)'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.OPEN_RECT_PAR, r'^\['))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.CLOSE_RECT_PAR, r'^\]'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.COMPARE_EQ, r'^\?='))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.COMPARE_GT, r'^\?>'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.COMPARE_LT, r'^\?<'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.COMPARE_GTE, r'^\?>\?='))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.COMPARE_LTE, r'^\?<\?='))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.COMPARE_NOT, r'^\?-='))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.PRINT, r'^DRUCKE'))
         self.__token_definitions.append(TokenDefinition(TOKEN.INT, r'^ZAHL'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.BOOLEAN, r'^BOOL'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.STR, r'^ZEICHENKETTE'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.BOOLEAN, r'^BOOL'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.STR, r'^ZEICHENKETTE'))
         self.__token_definitions.append(TokenDefinition(TOKEN.WHEN, r'^FALLS'))
         self.__token_definitions.append(TokenDefinition(TOKEN.THEN, r'^DANN'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.ELSE, r'^ANSONSTEN'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.ELSE, r'^ANSONSTEN'))
         self.__token_definitions.append(TokenDefinition(TOKEN.TRUE, r'^WAHR'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.FALSE, r'^FALSCH'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.FALSE, r'^FALSCH'))
         self.__token_definitions.append(TokenDefinition(TOKEN.AND, r'^UND'))
         self.__token_definitions.append(TokenDefinition(TOKEN.OR, r'^ODER'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.FALSE, r'^NICHT'))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.FALSE, r'^NICHT'))
         self.__token_definitions.append(TokenDefinition(TOKEN.EOL, r'^!'))
-        self.__token_definitions.append(TokenDefinition(TOKEN.EOF, r'^' + self.EOF))
+        self.__token_definitions.append(
+            TokenDefinition(TOKEN.EOF, r'^' + self.EOF))
 
     def read_input(self) -> bool:
         """
@@ -99,7 +119,8 @@ class Lexer:
             if ord(c) == 13:
                 continue
             else:
-                self.input_characters.append(InputCharacter(c, line, pos_in_line))
+                self.input_characters.append(
+                    InputCharacter(c, line, pos_in_line))
                 if c == self.EOF:
                     break
                 elif c == '\n':
@@ -118,7 +139,8 @@ class Lexer:
         """
         tokens: list['Token'] = list()
         # characters der Input_characters als zusammengeführter string
-        remaining_text: str = ''.join(str(x.character) for x in self.input_characters)
+        remaining_text: str = ''.join(str(x.character)
+                                      for x in self.input_characters)
 
         ident_set = {TOKEN.INT, TOKEN.STR, TOKEN.BOOLEAN}
 
@@ -137,23 +159,27 @@ class Lexer:
                 # position und line des gematchten lexemes ermitteln
                 line, pos = self.get_line_pos(remaining_text, len(match.value))
                 tokens.append(Token(match.token, match.value, line, pos))
-                if tokens[-1].token == TOKEN.IDENT:
+                if tokens[-1].token == TOKEN.IDENT and tokens[-2].token in [TOKEN.INT, TOKEN.STR, TOKEN.BOOLEAN]:
                     if self.symbol_table.search(tokens[-1].lexeme):
                         is_success = False
-                        print(f"Fehler in Zeile {line} Zeichen {pos} Variable {tokens[-1].lexeme} wurde bereits deklariert")
+                        print(f"Fehler in Zeile {line} Zeichen {pos} Variable {
+                              tokens[-1].lexeme} wurde bereits deklariert")
                     else:
                         try:
                             if tokens[-2].token in ident_set:
-                                self.symbol_table.insert(tokens[-1], tokens[-2].token)
+                                self.symbol_table.insert(
+                                    tokens[-1], tokens[-2].token)
                         except IndexError:
                             pass
 
                     # Prüfe, ob Variable bereits deklariert wurde
                     if not self.symbol_table.search(tokens[-1].lexeme):
                         is_success = False
-                        print(f"Fehler in Zeile {line} Zeichen {pos} Variable {tokens[-1].lexeme} wurde vor ihrer Deklaration verwendet.")
+                        print(f"Fehler in Zeile {line} Zeichen {pos} Variable {
+                              tokens[-1].lexeme} wurde vor ihrer Deklaration verwendet.")
             else:
-                msg = f"{remaining_text.split(' ')[0]} kann keinem Token zugewiesen werden."
+                msg = f"{remaining_text.split(
+                    ' ')[0]} kann keinem Token zugewiesen werden."
                 print(msg)
                 is_success = False
                 remaining_text = remaining_text[1:]
@@ -161,7 +187,8 @@ class Lexer:
         return is_success
 
     def get_line_pos(self, remaining_text: str, len_lexeme: int):
-        diff: int = len(self.input_characters) - len(remaining_text) - len_lexeme
+        diff: int = len(self.input_characters) - \
+            len(remaining_text) - len_lexeme
         return self.input_characters[diff].line, self.input_characters[diff].pos
 
     def __find_match(self, remaining_text: str):
@@ -175,7 +202,5 @@ class Lexer:
             match = td.match(remaining_text)
             if match.is_match:
                 return match
-        
+
         return TokenMatch(is_match=False)
-
-

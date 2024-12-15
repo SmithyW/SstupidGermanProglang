@@ -16,19 +16,8 @@ from semantic import *
     assignment -> ident assign expression
     print -> print ident
     expression -> term rightExpression
-    
-    boolExpression -> boolTerm rightBool  
-    
-    rightBool -> AND boolTerm rightBool 
-        | OR boolTerm rightBool
-        | epsilon
-        
-    boolTerm -> comparison
-        | boolean
-        | ident
-        | (boolExpression)
-    
-    comparison -> expression compOperator expression 
+
+
     
     rightExpression -> plus term rightExpression
     rightExpression -> minus term rightExpression
@@ -37,7 +26,7 @@ from semantic import *
     rightTerm -> mult operator rightTerm
     rightTerm -> div operator rightTerm
     rightTerm -> Epsilon
-    operator -> openPar expression closePar | num | ident | boolExpression
+    operator -> openPar expression closePar | num | ident 
 """
 
 
@@ -52,6 +41,7 @@ class Parser:
     Implementierung als rekursiver Abstieg.
 
     """
+
     def __init__(self, tokens):
         self.tokens: list[Token] = tokens
         self.current_token_pointer: int = 0
@@ -130,9 +120,9 @@ class Parser:
     # expression -> term rightExpression
     def expression(self, st: SyntaxTree) -> bool:
         return \
-                self.term(st.insert_subtree(TOKEN.TERM, get_semantic_function(TOKEN.TERM))) \
-                and self.right_expression(
-                    st.insert_subtree(TOKEN.RIGHT_EXPRESSION, get_semantic_function(TOKEN.RIGHT_EXPRESSION)))
+            self.term(st.insert_subtree(TOKEN.TERM, get_semantic_function(TOKEN.TERM))) \
+            and self.right_expression(
+                st.insert_subtree(TOKEN.RIGHT_EXPRESSION, get_semantic_function(TOKEN.RIGHT_EXPRESSION)))
 
     # rightExpression -> plus term rightExpression
     # rightExpression -> minus term rightExpression
@@ -143,23 +133,24 @@ class Parser:
 
         if self.match(add_set, st):
             return \
-                    self.term(st.insert_subtree(TOKEN.TERM, get_semantic_function(TOKEN.TERM))) \
-                    and self.right_expression(
-                        st.insert_subtree(TOKEN.RIGHT_EXPRESSION, get_semantic_function(TOKEN.RIGHT_EXPRESSION)))
+                self.term(st.insert_subtree(TOKEN.TERM, get_semantic_function(TOKEN.TERM))) \
+                and self.right_expression(
+                    st.insert_subtree(TOKEN.RIGHT_EXPRESSION, get_semantic_function(TOKEN.RIGHT_EXPRESSION)))
         elif self.match(sub_set, st):
             return \
-                    self.term(st.insert_subtree(TOKEN.TERM, get_semantic_function(TOKEN.TERM))) \
-                    and self.right_expression(
-                        st.insert_subtree(TOKEN.RIGHT_EXPRESSION, get_semantic_function(TOKEN.RIGHT_EXPRESSION)))
+                self.term(st.insert_subtree(TOKEN.TERM, get_semantic_function(TOKEN.TERM))) \
+                and self.right_expression(
+                    st.insert_subtree(TOKEN.RIGHT_EXPRESSION, get_semantic_function(TOKEN.RIGHT_EXPRESSION)))
         else:
-            st.insert_subtree(TOKEN.EPSILON, get_semantic_function(TOKEN.EPSILON))
+            st.insert_subtree(
+                TOKEN.EPSILON, get_semantic_function(TOKEN.EPSILON))
             return True
 
     # term -> operator rightTerm
     def term(self, st: SyntaxTree) -> bool:
         return \
-                self.operator(st.insert_subtree(TOKEN.OPERATOR, get_semantic_function(TOKEN.OPERATOR))) \
-                and self.right_term(st.insert_subtree(TOKEN.RIGHT_TERM, get_semantic_function(TOKEN.RIGHT_TERM)))
+            self.operator(st.insert_subtree(TOKEN.OPERATOR, get_semantic_function(TOKEN.OPERATOR))) \
+            and self.right_term(st.insert_subtree(TOKEN.RIGHT_TERM, get_semantic_function(TOKEN.RIGHT_TERM)))
 
     # rightTerm -> mult operator rightTerm
     # rightTerm -> div operator rightTerm
@@ -170,92 +161,16 @@ class Parser:
 
         if self.match(mul_set, st):
             return \
-                    self.operator(st.insert_subtree(TOKEN.OPERATOR, get_semantic_function(TOKEN.OPERATOR))) \
-                    and self.right_term(st.insert_subtree(TOKEN.RIGHT_TERM, get_semantic_function(TOKEN.RIGHT_TERM)))
+                self.operator(st.insert_subtree(TOKEN.OPERATOR, get_semantic_function(TOKEN.OPERATOR))) \
+                and self.right_term(st.insert_subtree(TOKEN.RIGHT_TERM, get_semantic_function(TOKEN.RIGHT_TERM)))
         elif self.match(div_set, st):
             return \
-                    self.operator(st.insert_subtree(TOKEN.OPERATOR, get_semantic_function(TOKEN.OPERATOR))) \
-                    and self.right_term(st.insert_subtree(TOKEN.RIGHT_TERM, get_semantic_function(TOKEN.RIGHT_TERM)))
+                self.operator(st.insert_subtree(TOKEN.OPERATOR, get_semantic_function(TOKEN.OPERATOR))) \
+                and self.right_term(st.insert_subtree(TOKEN.RIGHT_TERM, get_semantic_function(TOKEN.RIGHT_TERM)))
         else:
-            st.insert_subtree(TOKEN.EPSILON, get_semantic_function(TOKEN.EPSILON))
+            st.insert_subtree(
+                TOKEN.EPSILON, get_semantic_function(TOKEN.EPSILON))
             return True
-
-    # boolExpression -> boolTerm rightBool
-    def bool_expression(self, st: SyntaxTree) -> bool:
-        return \
-                self.bool_term(st.insert_subtree(TOKEN.BOOL_TERM, get_semantic_function(TOKEN.BOOL_TERM))) \
-                and self.right_bool(st.insert_subtree
-                                    (TOKEN.RIGHT_BOOL, get_semantic_function(TOKEN.RIGHT_BOOL)))
-
-    # boolTerm -> comparison
-    #         | boolean
-    #         | ident
-    #         | (boolExpression)
-    def bool_term(self, st: SyntaxTree) -> bool:
-        boolean_set = [TOKEN.TRUE, TOKEN.FALSE]
-        ident_set = [TOKEN.IDENT]
-        open_par_set = [TOKEN.OPEN_PAR]
-        close_par_set = [TOKEN.CLOSE_PAR]
-
-        if self.match(boolean_set, st):
-            return True
-        elif self.match(ident_set, st):
-            return True
-        elif self.match(open_par_set, st):
-            if self.bool_expression(st.insert_subtree(
-             TOKEN.BOOL_EXPRESSION, get_semantic_function(TOKEN.BOOL_EXPRESSION))):
-                if self.match(close_par_set, st):
-                    return True
-                else:
-                    self.syntax_error("Schließende Klammer erwartet")
-                    return False
-            else:
-                self.syntax_error("Boolescher Ausdruck erwartet")
-                return False
-        elif self.comparison(st.insert_subtree(TOKEN.COMPARISON, get_semantic_function(TOKEN.COMPARISON))):
-            return True
-        else:
-            self.syntax_error("Bool, Variable, öffnende Klammer oder Vergleich erwartet")
-            return False
-
-    # rightBool -> AND boolTerm rightBool
-    #         | OR boolTerm rightBool
-    #         | epsilon
-    def right_bool(self, st: SyntaxTree) -> bool:
-        and_set = [TOKEN.AND]
-        or_set = [TOKEN.OR]
-
-        if self.match(and_set, st) or self.match(or_set, st):
-            return \
-                    self.bool_term(st.insert_subtree(TOKEN.BOOL_TERM, get_semantic_function(TOKEN.BOOL_TERM))) \
-                    and self.right_bool(st.insert_subtree(TOKEN.RIGHT_BOOL, get_semantic_function(TOKEN.RIGHT_BOOL)))
-        else:
-            st.insert_subtree(TOKEN.EPSILON, get_semantic_function(TOKEN.EPSILON))
-            return True
-
-    # comparison -> expression compOperator expression
-    def comparison(self, st: SyntaxTree) -> bool:
-        comp_set = [
-            TOKEN.COMPARE_EQ,
-            TOKEN.COMPARE_LT,
-            TOKEN.COMPARE_GT,
-            TOKEN.COMPARE_LTE,
-            TOKEN.COMPARE_GTE,
-            TOKEN.COMPARE_NOT]
-
-        if self.expression(st.insert_subtree(TOKEN.EXPRESSION, get_semantic_function(TOKEN.EXPRESSION))):
-            if self.match(comp_set, st):
-                if self.expression(st.insert_subtree(
-                 TOKEN.EXPRESSION, get_semantic_function(TOKEN.EXPRESSION, get_semantic_function(TOKEN.EXPRESSION)))):
-                    return True
-                else:
-                    self.syntax_error("Ausdruck erwartet")
-                    return False
-            else:
-                self.syntax_error("Vergleichsoperator erwartet")
-                return False
-        else:
-            self.syntax_error("Ausdruck erwartet")
 
     # operator -> openPar expression closePar | num | ident | boolExpression
     def operator(self, st: SyntaxTree) -> bool:
@@ -278,8 +193,6 @@ class Parser:
             return True
         elif self.match(ident_set, st):
             return True
-        elif self.bool_expression(st.insert_subtree(TOKEN.BOOL_EXPRESSION, get_semantic_function(TOKEN.BOOL_EXPRESSION))):
-            return True
         else:
             self.syntax_error("Öffnende Klammer erwartet")
             return False  # TODO: SyntaxError
@@ -295,7 +208,8 @@ class Parser:
             if self.tokens[self.current_token_pointer].token == el:
                 st.insert_subtree(
                     self.tokens[self.current_token_pointer].token,
-                    get_semantic_function(self.tokens[self.current_token_pointer].token),
+                    get_semantic_function(
+                        self.tokens[self.current_token_pointer].token),
                     self.tokens[self.current_token_pointer])
                 self.current_token_pointer += 1
                 return True
@@ -305,20 +219,13 @@ class Parser:
         if self.tokens[self.current_token_pointer].token == TOKEN.EOF:
             print("Syntaxfehler: EOF")
         else:
-            print("Syntaxfehler: " + self.tokens[self.current_token_pointer].token.name)
+            print("Syntaxfehler: " +
+                  self.tokens[self.current_token_pointer].token.name)
         print("" if s is None else s)
 
 
 def get_semantic_function(t: TOKEN) -> Semantic | None:
     match t:
-        case TOKEN.BOOL_EXPRESSION:
-            return BoolExpression()
-        case TOKEN.BOOL_TERM:
-            return BoolTerm()
-        case TOKEN.RIGHT_BOOL:
-            return RightBool()
-        case TOKEN.COMPARISON:
-            return Comparison()
         case TOKEN.EXPRESSION:
             return Expression()
         case TOKEN.IDENT:

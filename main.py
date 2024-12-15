@@ -6,9 +6,9 @@ from syntax_tree import SyntaxTree
 from symbol_table_codegen import SymbolTableCodegen
 
 # Beispiel input, der verarbeitet wird
-input_text = """
-ZAHL a := 2 * 4 + 3!
-BOOL b := 2 ?= 5!
+input_text = """ZAHL a := 2 * 4 + 3!
+ZAHL b := 2 * 5!
+ZAHL c := a * b!
 """
 
 # Instanz eines lexers erstellen.
@@ -43,7 +43,8 @@ parser = Parser(lexer.tokens)
 
 # Eine Instanz eines Syntaxbaumes erzeugen
 # Als Top-Level Element das Nichtterminalsymbol "PROGRAM" übergeben
-parseTree = SyntaxTree(TOKEN.PROGRAM, langParser.get_semantic_function(TOKEN.PROGRAM))
+parseTree = SyntaxTree(
+    TOKEN.PROGRAM, langParser.get_semantic_function(TOKEN.PROGRAM))
 
 # Den Input in Form der Tokenliste parsen
 # Den gerade erzeugten Syntaxbaum dem Konstruktor übergeben

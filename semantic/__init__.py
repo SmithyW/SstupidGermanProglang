@@ -12,10 +12,3 @@ from semantic.eol import EOL
 from semantic.epsilon import Epsilon
 from semantic.eof import EOF
 from semantic.ident import Ident
-from semantic.bool_expression import BoolExpression
-from semantic.bool_term import BoolTerm
-from semantic.right_bool import RightBool
-from semantic.comparison import Comparison
-from semantic.boolean import Boolean
-
-
