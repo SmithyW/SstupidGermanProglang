@@ -7,23 +7,50 @@ class SymbolTable:
         self.table: list[SymbolTableEntry] = list()
 
     def insert(self, token: Token, el_type: TOKEN):
-        new_entry = SymbolTableEntry(len(self.table), token.lexeme, token, el_type)
+        """Fügt einen neuen Eintrag in die Symboltabelle ein.
+
+        Args:
+            token (Token): Information über das Token
+            el_type (TOKEN): Typ des Tokens
+
+        Returns:
+            SymbolTableEntry: Der eingefügte Eintrag
+        """
+        new_entry = SymbolTableEntry(
+            len(self.table), token.lexeme, token, el_type)
         self.table.append(new_entry)
         return new_entry
 
     def search(self, term: str):
+        """Sucht in der Symboltabelle nach einem Eintrag.
+
+        Args:
+            term (str): Suchbegriff (Name des Eintrags)
+
+        Returns:
+            SymbolTableEntry: Der gefundene Eintrag oder False
+        """
         found_entry = list(filter(lambda t: t.name == term, self.table))
         if len(found_entry) == 0:
             return False
         return found_entry[0]
 
     def get_index(self, term: str) -> str:
-        for idx, x in enumerate(self.table):
+        """Gibt den Index eines Eintrags zurück.
+
+        Args:
+            term (str): Suchbegriff (Name des Eintrags)
+
+        Returns:
+            str: Index des Eintrags mit Prefix 'id'
+        """
+        for _, x in enumerate(self.table):
             if x.name == term:
                 return f"id{x.index}"
         return "id#ERR"
 
     def print(self):
+        """Gibt die gesamte Symboltabelle aus."""
         for x in range(len(self.table)):
             print(str(self.table[x]))
 
