@@ -85,7 +85,7 @@ class Parser:
                         if self.match(eol_set, st):
                             return True
                         else:
-                            self.syntax_error("EOL Zeichen erwartet!!!")
+                            self.syntax_error("EOL Zeichen erwartet")
                             return False
                     else:
                         self.syntax_error("Fehler in Ausdruck")
